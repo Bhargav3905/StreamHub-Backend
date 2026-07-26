@@ -1,0 +1,37 @@
+{
+  "name": "streamhub-backend",
+  "version": "1.0.0",
+  "description": "A production-ready YouTube-inspired backend built with Node.js, Express.js, MongoDB, JWT Authentication, Cloudinary, Multer, and Mongoose.",
+  "homepage": "https://github.com/Bhargav3905/StreamHub-Backend#readme",
+  "bugs": {
+    "url": "https://github.com/Bhargav3905/StreamHub-Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bhargav3905/StreamHub-Backend.git"
+  },
+  "license": "ISC",
+  "author": "Bhargav",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.6"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.10.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.5.0",
+    "mongoose": "^9.8.0",
+    "mongoose-aggregate-paginate-v2": "^1.1.4",
+    "multer": "^2.2.0"
+  }
+}
