@@ -1,0 +1,170 @@
+import mongoose from "mongoose";
+import { Video } from "../models/video.models.js";
+import { Comment } from "../models/comment.models.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+const getVideoComments = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+
+  // Validate Video ID
+  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+    throw new ApiError(400, "Invalid video ID.");
+  }
+
+  // Check if video exists
+  const video = await Video.findById(videoId);
+  if (!video) {
+    throw new ApiError(404, "Video not found.");
+  }
+
+  // Aggregate Pipeline
+  const pipeline = [
+    {
+      $match: {
+        video: new mongoose.Types.ObjectId(videoId),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+      },
+    },
+    {
+      $unwind: "$owner",
+    },
+    {
+      $project: {
+        content: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        "owner.username": 1,
+        "owner.fullName": 1,
+        "owner.avatar": 1,
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ];
+
+  // Pagination Options
+  const options = {
+    page: Number(page),
+    limit: Number(limit),
+  };
+
+  // Fetch Comments
+  const comments = await Comment.aggregatePaginate(
+    Comment.aggregate(pipeline),
+    options
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, comments, "Comments fetched successfully."));
+});
+
+const addComment = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  const { content } = req.body;
+
+  // Validate Video ID
+  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+    throw new ApiError(400, "Invalid video ID.");
+  }
+
+  // Check if video exists
+  const video = await Video.findById(videoId);
+  if (!video) {
+    throw new ApiError(404, "Video not found.");
+  }
+
+  // Validate comment content
+  if (!content?.trim()) {
+    throw new ApiError(400, "Comment content is required.");
+  }
+
+  // Create comment
+  const comment = await Comment.create({
+    content: content.trim(),
+    owner: req.user._id,
+    video: videoId,
+  });
+
+  // Verify creation
+  if (!comment) {
+    throw new ApiError(500, "Failed to add comment.");
+  }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, comment, "Comment added successfully."));
+});
+
+const updateComment = asyncHandler(async (req, res) => {
+  const { commentId } = req.params;
+  const { content } = req.body;
+
+  // Validate Comment ID
+  if (!mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new ApiError(400, "Invalid comment ID.");
+  }
+
+  // Find Comment
+  const comment = await Comment.findById(commentId);
+  if (!comment) {
+    throw new ApiError(404, "Comment not found.");
+  }
+
+  // Check Ownership
+  if (comment.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to update this comment.");
+  }
+
+  // Validate & Update Content
+  if (!content?.trim()) {
+    throw new ApiError(400, "Comment content is required.");
+  }
+
+  comment.content = content.trim();
+  await comment.save();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, comment, "Comment updated successfully."));
+});
+
+const deleteComment = asyncHandler(async (req, res) => {
+  const { commentId } = req.params;
+
+  // Validate Comment ID
+  if (!mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new ApiError(400, "Invalid comment ID.");
+  }
+
+  // Find Comment
+  const comment = await Comment.findById(commentId);
+  if (!comment) {
+    throw new ApiError(404, "Comment not found.");
+  }
+
+  // Check Ownership
+  if (comment.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this comment.");
+  }
+
+  // Delete Comment
+  await comment.deleteOne();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Comment deleted successfully."));
+});
+
+export { getVideoComments, addComment, updateComment, deleteComment };
