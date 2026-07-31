@@ -9,10 +9,11 @@ import {
 
 const router = Router();
 
+// Protected Routes
 router.use(verifyJWT);
 
 router.route("/:videoId").get(getVideoComments).post(addComment);
 
-router.route("/c/:commentId").patch(updateComment).delete(deleteComment);
+router.route("/comment/:commentId").patch(updateComment).delete(deleteComment);
 
 export default router;

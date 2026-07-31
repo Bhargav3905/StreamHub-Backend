@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Tweet } from "../models/tweet.model.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -59,8 +59,8 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
   // Pagination Options
   const options = {
-    page: parseInt(page, 10),
-    limit: parseInt(limit, 10),
+    page: Number(page),
+    limit: Number(limit),
   };
 
   // Fetch Tweets

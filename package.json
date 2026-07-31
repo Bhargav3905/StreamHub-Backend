@@ -10,16 +10,34 @@
     "type": "git",
     "url": "git+https://github.com/Bhargav3905/StreamHub-Backend.git"
   },
-  "license": "ISC",
-  "author": "Bhargav",
+  "license": "MIT",
+  "author": "Bhargav Kamleshbhai Prajapati",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "mongoose",
+    "jwt",
+    "backend",
+    "rest-api",
+    "cloudinary",
+    "multer",
+    "authentication",
+    "mvc",
+    "streamhub"
+  ],
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "globals": "^17.8.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.9.6"
   },

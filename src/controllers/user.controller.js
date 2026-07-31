@@ -16,7 +16,7 @@ const generateAccessRefreshToken = async (userId) => {
     await user.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
-  } catch (error) {
+  } catch {
     throw new ApiError(
       500,
       "Something went wrong while generating refresh and access tokens !"
@@ -141,8 +141,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: {
-        refreshToken: 1, // this removes the field from document
+      $unset: {
+        refreshToken: "",
       },
     },
     {
@@ -191,18 +191,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    const { accessToken, newRefreshToken } = await generateAccessRefreshToken(
+    const { accessToken, refreshToken } = await generateAccessRefreshToken(
       user._id
     );
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newRefreshToken },
+          { accessToken, refreshToken },
           "Access Token Refreshed"
         )
       );
@@ -376,7 +376,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(req.user_id),
+        _id: new mongoose.Types.ObjectId(req.user._id),
       },
     },
     {

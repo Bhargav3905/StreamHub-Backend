@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -106,8 +106,8 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 
   // Pagination Options
   const options = {
-    page: parseInt(page, 10),
-    limit: parseInt(limit, 10),
+    page: Number(page),
+    limit: Number(limit),
   };
 
   // Fetch Subscribers
@@ -178,8 +178,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
 
   // Pagination Options
   const options = {
-    page: parseInt(page, 10),
-    limit: parseInt(limit, 10),
+    page: Number(page),
+    limit: Number(limit),
   };
 
   // Fetch Subscribed Channels

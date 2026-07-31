@@ -169,8 +169,8 @@ const getLikedVideos = asyncHandler(async (req, res) => {
 
   // Pagination Options
   const options = {
-    page: parseInt(page, 10),
-    limit: parseInt(limit, 10),
+    page: Number(page),
+    limit: Number(limit),
   };
 
   // Fetch Liked Videos
